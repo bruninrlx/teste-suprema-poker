@@ -1,7 +1,6 @@
 import {
   Entity,
   Column,
-  PrimaryGeneratedColumn,
   CreateDateColumn,
   UpdateDateColumn,
   ManyToOne,
@@ -17,14 +16,13 @@ class Transactions {
   id: ObjectID;
 
   @Column()
+  playerTransactionOwner: string;
+
+  @Column()
   destinyPlayerCpf: string;
 
   @Column()
-  player_id: string;
-
-  @ManyToOne(() => Users)
-  @JoinColumn({ name: 'player_id' })
-  playerTransactionOwner: string;
+  destinyPlayerName: string;
 
   @Column('numeric')
   transactionValue: number;

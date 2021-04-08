@@ -3,7 +3,6 @@ import { EntityRepository, Repository } from 'typeorm';
 import User from '../entities/user';
 import ICreateUserDTO from '../dtos/ICreateUserDTO';
 
-interface;
 @EntityRepository(User)
 class UserRepository extends Repository<User> {
   public async createUser({
@@ -16,24 +15,37 @@ class UserRepository extends Repository<User> {
     const user = this.create({ name, cpf, email, password, saldo });
 
     await this.save(user);
-
     return user;
   }
 
   public async updatePersonalSaldo(
-    originPlayer: string,
+    playerTransactionOwner: string,
     saldo: number,
-  ): Promise<User | number> {
-    const saldoUpdate = await this.update(originPlayer, { saldo });
-    await this.save(saldoUpdate);
-    return saldoUpdate;
+  ): Promise<User | undefined> {
+    await this.update(playerTransactionOwner, { saldo });
+
+    const personaSaldoUpdated = this.findOne({
+      where: playerTransactionOwner,
+    });
+    return personaSaldoUpdated;
+  }
+
+  public async updateDestinyPlayerSaldo(
+    destinyPlayerCpf: string,
+    saldo: number,
+  ): Promise<User | undefined> {
+    await this.update({ cpf: destinyPlayerCpf }, { saldo });
+
+    const updatedDestinyPlayer = this.findOne({
+      cpf: destinyPlayerCpf,
+    });
+    return updatedDestinyPlayer;
   }
 
   public async findByEmail(email: string): Promise<User | undefined> {
     const user = await this.findOne({
       where: { email },
     });
-
     return user;
   }
 
@@ -41,7 +53,6 @@ class UserRepository extends Repository<User> {
     const user = await this.findOne({
       where: { cpf },
     });
-
     return user;
   }
 

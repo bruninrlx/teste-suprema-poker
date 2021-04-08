@@ -1,14 +1,13 @@
-import { getCustomRepository, getMongoRepository } from 'typeorm';
+import { getCustomRepository } from 'typeorm';
 import Transactions from '../entities/transactions';
-import Users from '../entities/user';
 import TransactionRepository from '../repositories/transactionRepository';
 import PlayersRepository from '../repositories/playerRepositorie';
 
 interface Request {
   destinyPlayerCpf: string;
-  playerTransactionOwner: string;
   transactionValue: number;
   transactionStatus: string;
+  playerTransactionOwner: string;
 }
 
 class TransactionService {
@@ -20,20 +19,19 @@ class TransactionService {
   }: Request): Promise<Transactions> {
     const playersRepository = getCustomRepository(PlayersRepository);
 
-    const selfId = await playersRepository.findById(playerTransactionOwner);
+    const selfAccount = await playersRepository.findById(
+      playerTransactionOwner,
+    );
+
     const playerDestiny = await playersRepository.findByCpf(destinyPlayerCpf);
 
-    if (!selfId) {
+    if (!selfAccount) {
       throw new Error('Você nao está logado');
-    }
-
-    if (!playerDestiny) {
+    } else if (!playerDestiny) {
       throw new Error('Digite um usuário valido Cadastrado');
     }
 
-    const { saldo } = selfId;
-
-    if (saldo < transactionValue) {
+    if (selfAccount.saldo < transactionValue) {
       throw new Error('Você não tem saldo o suficiente');
     }
 
@@ -41,18 +39,87 @@ class TransactionService {
 
     const transaction = await transactionRepository.createTransactions({
       destinyPlayerCpf,
-      playerTransactionOwner,
+      destinyPlayerName: playerDestiny.name,
       transactionValue,
       transactionStatus,
+      playerTransactionOwner,
     });
+
+    const newPersonalSaldo = selfAccount.saldo - transactionValue;
+    const newDestinyPlayerSaldo = playerDestiny.saldo + transactionValue;
+
+    playersRepository.updatePersonalSaldo(
+      playerTransactionOwner,
+      newPersonalSaldo,
+    );
+
+    playersRepository.updateDestinyPlayerSaldo(
+      destinyPlayerCpf,
+      newDestinyPlayerSaldo,
+    );
 
     return transaction;
   }
 
-  public async listTransaction(): Promise<Transactions[]> {
+  public async listMyTransactions(
+    myId: string,
+  ): Promise<Transactions[] | undefined> {
     const transactionRepository = getCustomRepository(TransactionRepository);
-    const listTransactions = await transactionRepository.listAll();
+    const listTransactions = await transactionRepository.listMyTransactions(
+      myId,
+    );
     return listTransactions;
+  }
+
+  public async listMySpecificTransaction(
+    myId: string,
+  ): Promise<Transactions | undefined> {
+    const transactionRepository = getCustomRepository(TransactionRepository);
+    const Transaction = await transactionRepository.findOneMyTransaction(myId);
+
+    return Transaction;
+  }
+
+  public async deleteMyTransaction(myId: string): Promise<null> {
+    const playersRepository = getCustomRepository(PlayersRepository);
+    const transactionRepository = getCustomRepository(TransactionRepository);
+    const transaction = await transactionRepository.findOneMyTransaction(myId);
+
+    if (!transaction) {
+      throw new Error(
+        'Transação não encontrada, utilize o id de uma transação válida',
+      );
+    }
+
+    const selfAccount = await playersRepository.findById(
+      transaction.playerTransactionOwner,
+    );
+
+    const playerDestiny = await playersRepository.findByCpf(
+      transaction.destinyPlayerCpf,
+    );
+
+    if (!selfAccount || !playerDestiny) {
+      throw new Error(
+        'Usuário não cadastrado na plataforma , ou teve a conta desativada',
+      );
+    }
+
+    const myRefund = selfAccount.saldo + transaction.transactionValue;
+    const discount = playerDestiny.saldo - transaction.transactionValue;
+
+    playersRepository.updatePersonalSaldo(
+      transaction.playerTransactionOwner,
+      myRefund,
+    );
+
+    playersRepository.updateDestinyPlayerSaldo(
+      transaction.destinyPlayerCpf,
+      discount,
+    );
+
+    transactionRepository.deleteMyTransaction(myId);
+    return null;
   }
 }
 

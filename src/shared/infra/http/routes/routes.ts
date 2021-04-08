@@ -14,9 +14,14 @@ routes.post('/session', playerController.authUser);
 routes.use(ensureAuthenticated);
 
 routes.post('/createtransaction', transactionsController.createTransaction);
+routes.get('/mytransactions/:id', transactionsController.ListMyTransactions);
 routes.get(
-  '/listapersonaltransactions',
-  transactionsController.listaAllproducts,
+  '/specifictransaction/:id',
+  transactionsController.ListMySpecificTransaction,
+);
+routes.delete(
+  '/canceltransaction/:id',
+  transactionsController.cancelMyTransaction,
 );
 
 routes.get('/showusercpf/:cpf', playerController.ListPlayerByCpf);

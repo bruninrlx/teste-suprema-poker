@@ -1,4 +1,5 @@
 import { Request, Response } from 'express';
+import Transactions from '../entities/transactions';
 import TransactionService from '../services/TransactionService';
 
 export default class TransactionController {
@@ -16,26 +17,58 @@ export default class TransactionController {
 
       const createTransactionService = new TransactionService();
 
-      const transaction = await createTransactionService.createTransaction({
+      await createTransactionService.createTransaction({
         playerTransactionOwner,
         destinyPlayerCpf,
         transactionValue,
         transactionStatus,
       });
 
-      return response.json(transaction);
+      return response
+        .status(200)
+        .json({ message: 'transação concluída com sucesso' });
     } catch (err) {
       return response.status(400).json({ error: err.message });
     }
   }
 
-  public async listaAllproducts(
+  public async ListMyTransactions(
     request: Request,
     response: Response,
   ): Promise<Response> {
     const transactionService = new TransactionService();
-    const listAllProducts = await transactionService.listTransaction();
 
-    return response.json(listAllProducts);
+    const myTransactions = await transactionService.listMyTransactions(
+      request.params.id,
+    );
+
+    return response.json(myTransactions);
+  }
+
+  public async ListMySpecificTransaction(
+    request: Request,
+    response: Response,
+  ): Promise<Response> {
+    const transactionService = new TransactionService();
+
+    const myTransactions = await transactionService.listMySpecificTransaction(
+      request.params.id,
+    );
+
+    return response.json(myTransactions);
+  }
+
+  public async cancelMyTransaction(
+    request: Request,
+    response: Response,
+  ): Promise<Response> {
+    try {
+      const transactionService = new TransactionService();
+      await transactionService.deleteMyTransaction(request.params.id);
+
+      return response.status(400).json('transação deletada com sucesso');
+    } catch (error) {
+      return response.status(400).json(error.message);
+    }
   }
 }

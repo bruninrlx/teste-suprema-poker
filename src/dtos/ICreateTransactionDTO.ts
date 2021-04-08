@@ -1,6 +1,7 @@
 export default interface ICreateTransactionDTO {
   destinyPlayerCpf: string;
-  playerTransactionOwner: string;
+  destinyPlayerName: string;
   transactionValue: number;
   transactionStatus: string;
+  playerTransactionOwner: string;
 }
