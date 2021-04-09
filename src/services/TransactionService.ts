@@ -80,6 +80,24 @@ class TransactionService {
     return Transaction;
   }
 
+  public async listReceivedTransactions(
+    myId: string,
+  ): Promise<Transactions[] | undefined> {
+    const playersRepository = getCustomRepository(PlayersRepository);
+    const transactionRepository = getCustomRepository(TransactionRepository);
+    const myUser = await playersRepository.findById(myId);
+
+    if (!myUser) {
+      throw new Error('faça o login para utilizar a dashboard');
+    }
+
+    const receivedTransactions = await transactionRepository.find({
+      destinyPlayerCpf: myUser.cpf,
+    });
+
+    return receivedTransactions;
+  }
+
   public async deleteMyTransaction(myId: string): Promise<null> {
     const playersRepository = getCustomRepository(PlayersRepository);
     const transactionRepository = getCustomRepository(TransactionRepository);

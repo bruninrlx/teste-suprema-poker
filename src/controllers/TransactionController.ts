@@ -58,6 +58,18 @@ export default class TransactionController {
     return response.json(myTransactions);
   }
 
+  public async receivedTransactions(
+    request: Request,
+    response: Response,
+  ): Promise<Response> {
+    const transactionService = new TransactionService();
+    const receivedTransactions = await transactionService.listReceivedTransactions(
+      request.params.id,
+    );
+
+    return response.json(receivedTransactions);
+  }
+
   public async cancelMyTransaction(
     request: Request,
     response: Response,

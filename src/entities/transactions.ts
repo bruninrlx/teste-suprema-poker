@@ -4,9 +4,10 @@ import {
   CreateDateColumn,
   UpdateDateColumn,
   ManyToOne,
-  JoinColumn,
   ObjectIdColumn,
   ObjectID,
+  JoinColumn,
+  JoinTable,
 } from 'typeorm';
 import Users from './user';
 
@@ -17,6 +18,10 @@ class Transactions {
 
   @Column()
   playerTransactionOwner: string;
+
+  @ManyToOne(type => Users, user => user.id, { eager: true })
+  @JoinColumn({ name: 'playerTransactionOwner' })
+  playerTransaction: Users;
 
   @Column()
   destinyPlayerCpf: string;

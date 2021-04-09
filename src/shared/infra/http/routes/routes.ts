@@ -19,6 +19,10 @@ routes.get(
   '/specifictransaction/:id',
   transactionsController.ListMySpecificTransaction,
 );
+routes.get(
+  '/receivedtransactions/:id',
+  transactionsController.receivedTransactions,
+);
 routes.delete(
   '/canceltransaction/:id',
   transactionsController.cancelMyTransaction,
