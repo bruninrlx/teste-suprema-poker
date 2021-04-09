@@ -1,6 +1,8 @@
 import { Request, Response } from 'express';
-import Transactions from '../entities/transactions';
+import { Index } from 'typeorm';
+import Users from '../entities/user';
 import TransactionService from '../services/TransactionService';
+import UserServices from '../services/UserService';
 
 export default class TransactionController {
   public async createTransaction(
@@ -67,7 +69,20 @@ export default class TransactionController {
       request.params.id,
     );
 
-    return response.json(receivedTransactions);
+    if (!receivedTransactions) {
+      throw new Error('Você ainda não recebeu nenhuma transação');
+    }
+
+    const abstractTransaction = receivedTransactions.map(
+      ({ id, playerTransactionOwner, transactionValue, created_at }) => ({
+        id,
+        playerTransactionOwner,
+        transactionValue,
+        created_at,
+      }),
+    );
+
+    return response.json(abstractTransaction);
   }
 
   public async cancelMyTransaction(

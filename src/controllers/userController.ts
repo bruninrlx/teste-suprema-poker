@@ -51,6 +51,16 @@ export default class ProductsController {
     }
   }
 
+  public async ListAllUsers(
+    request: Request,
+    response: Response,
+  ): Promise<Response> {
+    const listUserService = new UserService();
+    const allUsersPlatform = await listUserService.listUsers();
+
+    return response.json(allUsersPlatform);
+  }
+
   public async ListPlayerByCpf(
     request: Request,
     response: Response,

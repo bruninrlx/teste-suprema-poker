@@ -33,6 +33,7 @@ routes.delete(
 );
 
 /* routes users players */
+routes.get('/listallusers', playerController.ListAllUsers);
 routes.get('/showusercpf/:cpf', playerController.ListPlayerByCpf);
 routes.get('/showuserid/:id', playerController.ListPlayerById);
 routes.post('/createuser', playerController.createUser);

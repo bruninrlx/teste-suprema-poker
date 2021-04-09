@@ -57,6 +57,12 @@ class UserServices {
     return userUpdate;
   }
 
+  public async listUsers(): Promise<Users[] | undefined> {
+    const playerRepository = getCustomRepository(PlayerRepository);
+    const listPlayers = await playerRepository.find();
+    return listPlayers;
+  }
+
   public async listUserById(id: string): Promise<Users | undefined> {
     const playerRepository = getCustomRepository(PlayerRepository);
     const listTransactions = await playerRepository.findById(id);
