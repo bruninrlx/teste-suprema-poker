@@ -13,23 +13,30 @@ routes.post('/session', playerController.authUser);
 
 routes.use(ensureAuthenticated);
 
+/* routes transactions */
 routes.post('/createtransaction', transactionsController.createTransaction);
 routes.get('/mytransactions/:id', transactionsController.ListMyTransactions);
+
 routes.get(
   '/specifictransaction/:id',
   transactionsController.ListMySpecificTransaction,
 );
+
 routes.get(
   '/receivedtransactions/:id',
   transactionsController.receivedTransactions,
 );
+
 routes.delete(
   '/canceltransaction/:id',
   transactionsController.cancelMyTransaction,
 );
 
+/* routes users players */
 routes.get('/showusercpf/:cpf', playerController.ListPlayerByCpf);
 routes.get('/showuserid/:id', playerController.ListPlayerById);
 routes.post('/createuser', playerController.createUser);
+routes.put('/updatemyaccount/:id', playerController.updateMyUser);
+routes.delete('/deletemyaccount/:id', playerController.deleteMyAccount);
 
 export default routes;

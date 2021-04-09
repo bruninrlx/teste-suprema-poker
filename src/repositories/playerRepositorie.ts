@@ -42,6 +42,19 @@ class UserRepository extends Repository<User> {
     return updatedDestinyPlayer;
   }
 
+  public async updateUserAccount(
+    id: string,
+    name: string,
+    cpf: string,
+    email: string,
+  ): Promise<User | undefined> {
+    await this.update(id, { name, cpf, email });
+
+    const updatedMyAccount = await this.findOne(id);
+
+    return updatedMyAccount;
+  }
+
   public async findByEmail(email: string): Promise<User | undefined> {
     const user = await this.findOne({
       where: { email },
@@ -59,6 +72,11 @@ class UserRepository extends Repository<User> {
   public async findById(_id: string): Promise<User | undefined> {
     const user = await this.findOne(_id);
     return user;
+  }
+
+  public async deleteMyAccount(_id: string): Promise<null> {
+    await this.delete(_id);
+    return null;
   }
 }
 

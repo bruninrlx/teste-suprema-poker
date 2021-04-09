@@ -40,20 +40,40 @@ class UserServices {
     return user;
   }
 
+  public async updateMyUser(
+    id: string,
+    name: string,
+    cpf: string,
+    email: string,
+  ): Promise<Users | undefined> {
+    const playerRepository = getCustomRepository(PlayerRepository);
+    const userUpdate = await playerRepository.updateUserAccount(
+      id,
+      name,
+      cpf,
+      email,
+    );
+
+    return userUpdate;
+  }
+
   public async listUserById(id: string): Promise<Users | undefined> {
     const playerRepository = getCustomRepository(PlayerRepository);
-
     const listTransactions = await playerRepository.findById(id);
-
     return listTransactions;
   }
 
   public async listUserByCpf(cpf: string): Promise<Users | undefined> {
     const playerRepository = getCustomRepository(PlayerRepository);
-
     const listTransactions = await playerRepository.findByCpf(cpf);
-
     return listTransactions;
+  }
+
+  public async deleteMyAccount(id: string): Promise<null> {
+    const playerRepository = getCustomRepository(PlayerRepository);
+    await playerRepository.delete(id);
+
+    return null;
   }
 }
 

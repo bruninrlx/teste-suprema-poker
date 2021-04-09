@@ -76,7 +76,6 @@ class TransactionService {
   ): Promise<Transactions | undefined> {
     const transactionRepository = getCustomRepository(TransactionRepository);
     const Transaction = await transactionRepository.findOneMyTransaction(myId);
-
     return Transaction;
   }
 

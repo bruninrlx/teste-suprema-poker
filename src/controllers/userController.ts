@@ -4,9 +4,12 @@ import UserService from '../services/UserService';
 import AuthenticateUserService from '../services/AuthenticateUserService';
 
 export default class ProductsController {
-  public async createUser(req: Request, res: Response): Promise<Response> {
+  public async createUser(
+    request: Request,
+    response: Response,
+  ): Promise<Response> {
     try {
-      const { name, cpf, email, password, saldo } = req.body;
+      const { name, cpf, email, password, saldo } = request.body;
 
       const createUserService = new UserService();
 
@@ -18,39 +21,82 @@ export default class ProductsController {
         saldo,
       });
 
-      return res.json(user);
+      return response.json(user);
     } catch (err) {
-      return res.status(400).json({ error: err.message });
+      return response.status(400).json({ error: err.message });
     }
   }
 
-  public async ListPlayerByCpf(req: Request, res: Response): Promise<Response> {
+  public async updateMyUser(
+    request: Request,
+    response: Response,
+  ): Promise<Response> {
+    try {
+      const { name, cpf, email } = request.body;
+      const userService = new UserService();
+      const { id } = request.params;
+
+      const MyAccountUpdated = await userService.updateMyUser(
+        id,
+        name,
+        cpf,
+        email,
+      );
+      return response.status(200).json(MyAccountUpdated);
+    } catch (error) {
+      return response.status(400).json({
+        error:
+          'Não foi possivel atualizar os dados, verifique se os dados estão corretos',
+      });
+    }
+  }
+
+  public async ListPlayerByCpf(
+    request: Request,
+    response: Response,
+  ): Promise<Response> {
     try {
       const listUserService = new UserService();
-      const { cpf } = req.params;
+      const { cpf } = request.params;
       const playerData = await listUserService.listUserByCpf(cpf);
 
-      return res.json(playerData);
+      return response.json(playerData);
     } catch (error) {
-      return res.status(400).json({
+      return response.status(400).json({
         error:
           'falha ao encontrar esse player, verifique se o cpf está correto',
       });
     }
   }
 
-  public async ListPlayerById(req: Request, res: Response): Promise<Response> {
+  public async ListPlayerById(
+    request: Request,
+    response: Response,
+  ): Promise<Response> {
     try {
       const listUserService = new UserService();
-      const { id } = req.params;
+      const { id } = request.params;
       const playerData = await listUserService.listUserById(id);
 
-      return res.json(playerData);
+      return response.json(playerData);
     } catch (error) {
-      return res.status(400).json({
+      return response.status(400).json({
         error: 'falha ao encontrar esse player, verifique se o ID está correto',
       });
     }
+  }
+
+  public async deleteMyAccount(
+    request: Request,
+    response: Response,
+  ): Promise<Response> {
+    const userService = new UserService();
+
+    const { id } = request.params;
+
+    userService.deleteMyAccount(id);
+
+    return response.status(200).json('conta deletada com sucesso');
   }
 
   public async authUser(
