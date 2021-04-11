@@ -9,21 +9,31 @@ const routes = Router();
 const transactionsController = new TransactionController();
 const playerController = new PlayerController();
 
+/* route login */
 routes.post('/session', playerController.authUser);
 
-routes.use(ensureAuthenticated);
-
 /* routes transactions */
-routes.post('/createtransaction', transactionsController.createTransaction);
-routes.get('/mytransactions/:id', transactionsController.ListMyTransactions);
+routes.post(
+  '/createtransaction',
+  ensureAuthenticated,
+  transactionsController.createTransaction,
+);
+
+routes.get(
+  '/madetransactions/:id',
+  ensureAuthenticated,
+  transactionsController.ListMyTransactions,
+);
 
 routes.get(
   '/specifictransaction/:id',
+  ensureAuthenticated,
   transactionsController.ListMySpecificTransaction,
 );
 
 routes.get(
   '/receivedtransactions/:id',
+  ensureAuthenticated,
   transactionsController.receivedTransactions,
 );
 
@@ -33,11 +43,32 @@ routes.delete(
 );
 
 /* routes users players */
-routes.get('/listallusers', playerController.ListAllUsers);
-routes.get('/showusercpf/:cpf', playerController.ListPlayerByCpf);
-routes.get('/showuserid/:id', playerController.ListPlayerById);
 routes.post('/createuser', playerController.createUser);
-routes.put('/updatemyaccount/:id', playerController.updateMyUser);
-routes.delete('/deletemyaccount/:id', playerController.deleteMyAccount);
+
+routes.get('/listallusers', ensureAuthenticated, playerController.ListAllUsers);
+
+routes.get(
+  '/showusercpf/:cpf',
+  ensureAuthenticated,
+  playerController.ListPlayerByCpf,
+);
+
+routes.get(
+  '/showuserid/:id',
+  ensureAuthenticated,
+  playerController.ListPlayerById,
+);
+
+routes.put(
+  '/updatemyaccount/:id',
+  ensureAuthenticated,
+  playerController.updateMyUser,
+);
+
+routes.delete(
+  '/deletemyaccount/:id',
+  ensureAuthenticated,
+  playerController.deleteMyAccount,
+);
 
 export default routes;

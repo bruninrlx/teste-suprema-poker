@@ -1,8 +1,5 @@
 import { Request, Response } from 'express';
-import { Index } from 'typeorm';
-import Users from '../entities/user';
 import TransactionService from '../services/TransactionService';
-import UserServices from '../services/UserService';
 
 export default class TransactionController {
   public async createTransaction(
@@ -43,7 +40,6 @@ export default class TransactionController {
     const myTransactions = await transactionService.listMyTransactions(
       request.params.id,
     );
-
     return response.json(myTransactions);
   }
 
@@ -56,7 +52,6 @@ export default class TransactionController {
     const myTransactions = await transactionService.listMySpecificTransaction(
       request.params.id,
     );
-
     return response.json(myTransactions);
   }
 
@@ -74,14 +69,13 @@ export default class TransactionController {
     }
 
     const abstractTransaction = receivedTransactions.map(
-      ({ id, playerTransactionOwner, transactionValue, created_at }) => ({
+      ({ id, originPlayerName, transactionValue, created_at }) => ({
         id,
-        playerTransactionOwner,
+        originPlayerName,
         transactionValue,
         created_at,
       }),
     );
-
     return response.json(abstractTransaction);
   }
 

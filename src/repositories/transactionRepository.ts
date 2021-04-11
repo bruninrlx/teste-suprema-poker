@@ -6,13 +6,15 @@ import ICreateTransactionDTO from '../dtos/ICreateTransactionDTO';
 @EntityRepository(Transaction)
 class TransactionRepository extends Repository<Transaction> {
   public async createTransactions({
+    originPlayerName,
     playerTransactionOwner,
     destinyPlayerCpf,
     destinyPlayerName,
     transactionValue,
     transactionStatus,
   }: ICreateTransactionDTO): Promise<Transaction> {
-    const transaction = this.create({
+    const transaction = await this.create({
+      originPlayerName,
       playerTransactionOwner,
       destinyPlayerCpf,
       destinyPlayerName,
@@ -44,7 +46,7 @@ class TransactionRepository extends Repository<Transaction> {
   }
 
   public async deleteMyTransaction(myTransactionId: string): Promise<null> {
-    this.delete(myTransactionId);
+    await this.delete(myTransactionId);
 
     return null;
   }

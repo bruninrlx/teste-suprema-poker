@@ -24,6 +24,9 @@ class Transactions {
   playerTransaction: Users;
 
   @Column()
+  originPlayerName: string;
+
+  @Column()
   destinyPlayerCpf: string;
 
   @Column()

@@ -38,6 +38,7 @@ class TransactionService {
     const transactionRepository = getCustomRepository(TransactionRepository);
 
     const transaction = await transactionRepository.createTransactions({
+      originPlayerName: selfAccount.name,
       destinyPlayerCpf,
       destinyPlayerName: playerDestiny.name,
       transactionValue,
@@ -48,12 +49,12 @@ class TransactionService {
     const newPersonalSaldo = selfAccount.saldo - transactionValue;
     const newDestinyPlayerSaldo = playerDestiny.saldo + transactionValue;
 
-    playersRepository.updatePersonalSaldo(
+    await playersRepository.updatePersonalSaldo(
       playerTransactionOwner,
       newPersonalSaldo,
     );
 
-    playersRepository.updateDestinyPlayerSaldo(
+    await playersRepository.updateDestinyPlayerSaldo(
       destinyPlayerCpf,
       newDestinyPlayerSaldo,
     );
@@ -125,17 +126,17 @@ class TransactionService {
     const myRefund = selfAccount.saldo + transaction.transactionValue;
     const discount = playerDestiny.saldo - transaction.transactionValue;
 
-    playersRepository.updatePersonalSaldo(
+    await playersRepository.updatePersonalSaldo(
       transaction.playerTransactionOwner,
       myRefund,
     );
 
-    playersRepository.updateDestinyPlayerSaldo(
+    await playersRepository.updateDestinyPlayerSaldo(
       transaction.destinyPlayerCpf,
       discount,
     );
 
-    transactionRepository.deleteMyTransaction(myId);
+    await transactionRepository.deleteMyTransaction(myId);
     return null;
   }
 }

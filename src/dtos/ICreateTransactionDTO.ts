@@ -1,6 +1,5 @@
-import Users from '../entities/user';
-
 export default interface ICreateTransactionDTO {
+  originPlayerName: string;
   destinyPlayerCpf: string;
   destinyPlayerName: string;
   transactionValue: number;
